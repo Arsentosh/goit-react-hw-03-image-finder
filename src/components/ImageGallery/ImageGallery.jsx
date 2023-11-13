@@ -7,13 +7,9 @@ import Loader from '../Loader/Loader';
 import Button from '../Button/Button';
 
 export default class ImageGallery extends Component {
-  static propTypes = {
-    onClick: PropTypes.func.isRequired,
-    inputValue: PropTypes.string.isRequired,
-  };
-
   state = {
     images: [],
+    totalHits: 0,
     status: 'idle',
   };
 
@@ -33,6 +29,7 @@ export default class ImageGallery extends Component {
       .then(response => {
         this.setState({
           images: response.hits,
+          totalHits: response.totalHits,
           status: 'resolve',
         });
       })
@@ -42,7 +39,7 @@ export default class ImageGallery extends Component {
   fetchLoadMore = () => {
     const { inputValue, page } = this.props;
 
-    getImages(inputValue, page)
+    getImages(inputValue, page + 1)
       .then(response => {
         this.setState(prevState => ({
           images: [...prevState.images, ...response.hits],
@@ -53,7 +50,7 @@ export default class ImageGallery extends Component {
   };
 
   render() {
-    const { images, status } = this.state;
+    const { images, status, totalHits } = this.state;
 
     if (status === 'pending') {
       return <Loader />;
@@ -72,11 +69,10 @@ export default class ImageGallery extends Component {
               />
             ))}
           </ul>
-          {this.state.images.length !== 0 ? (
+          {images.length < totalHits && (
             <Button onClick={this.props.loadMoreBtn} />
-          ) : (
-            alert('No results')
           )}
+          {images.length === 0 && alert('No results')}
         </>
       );
     }
