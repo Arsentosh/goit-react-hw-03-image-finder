@@ -72,9 +72,13 @@ export default class ImageGallery extends Component {
           {images.length < totalHits && (
             <Button onClick={this.props.loadMoreBtn} />
           )}
-          {images.length === 0 && alert('No results')}
+          {images.length === 0 && <p>No results found</p>}
         </>
       );
+    }
+
+    if (status === 'rejected') {
+      return <p>Error fetching images</p>;
     }
   }
 }
